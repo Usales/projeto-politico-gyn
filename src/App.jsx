@@ -18,6 +18,7 @@ import Participe from "./components/Participe";
 import Footer from "./components/Footer";
 import WhatsAppFloat from "./components/WhatsAppFloat";
 import Bairros from "./components/Bairros";
+import Projetos from "./components/Projetos";
 
 function PaginaInicial() {
   return (
@@ -50,6 +51,7 @@ function Conteudo() {
       <Routes>
         <Route path="/" element={<PaginaInicial />} />
         <Route path="/bairros" element={<PaginaBairros />} />
+        <Route path="/projetos" element={<Projetos />} />
         <Route
           path="*"
           element={
