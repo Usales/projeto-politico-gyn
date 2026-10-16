@@ -22,7 +22,7 @@ export default function Propostas() {
             Propostas
           </span>
           <h2 className="font-display mt-3 text-3xl font-extrabold text-navy-900 md:text-5xl">
-            Três pilares para Goiânia
+            Pilares para Goiânia
           </h2>
           <p className="mt-4 text-base text-navy-900/70 md:text-lg">
             Ideias simples, diretas e que podem ser acompanhadas por qualquer cidadão.
