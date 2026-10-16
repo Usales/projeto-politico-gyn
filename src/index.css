@@ -13,10 +13,57 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem; /* o título da seção não fica escondido atrás do menu */
+  -webkit-text-size-adjust: 100%; /* o iPhone não aumenta o texto sozinho ao girar a tela */
+  text-size-adjust: 100%;
+  background: var(--color-navy-950); /* cor que aparece no "elástico" do iOS ao puxar a tela */
 }
 
 body {
   font-family: var(--font-sans);
   background: var(--color-paper);
   color: var(--color-navy-900);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Toque instantâneo, sem atraso nem zoom por duplo toque */
+a,
+button {
+  touch-action: manipulation;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* iOS dá zoom automático em campos com letra menor que 16px. Isso evita. */
+input,
+textarea,
+select {
+  font-size: 16px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Áreas seguras do iPhone (notch, Dynamic Island e barra inferior) */
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-bottom {
+  padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+}
+
+/* Margens laterais respeitam o notch quando o iPhone está deitado */
+[class*="max-w-6xl"] {
+  padding-left: max(1.25rem, env(safe-area-inset-left));
+  padding-right: max(1.25rem, env(safe-area-inset-right));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
