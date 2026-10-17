@@ -6,83 +6,100 @@ import {
   Download,
   X,
   Search,
-  ShieldCheck,
   Wallet,
   Landmark,
   Scale,
   ChevronRight,
   Clock3,
   Eye,
+  ShieldCheck,
 } from "lucide-react";
 
 const projetos = [
   {
     id: 1,
-    titulo: "Projeto demonstrativo: Segurança urbana",
+    titulo: "Redução responsável da carga tributária municipal",
     descricao:
-      "Exemplo de proposta voltada à prevenção da violência e à melhoria da segurança nos espaços públicos.",
-    categoria: "Segurança",
-    status: "Exemplo ilustrativo",
-    pdf: "/documentos/projeto-exemplo-1.pdf",
+      "Anteprojeto que estabelece diretrizes de transparência tributária, avaliação da arrecadação e identificação de oportunidades juridicamente viáveis de redução de tributos municipais em Goiânia.",
+    categoria: "Tributação",
+    status: "Anteprojeto para discussão legislativa",
+    pdf: "/documentos/anteprojeto-reducao-tributaria-goiania.pdf",
     caracteristicas: [
       {
         titulo: "Objetivo",
         descricao:
-          "Estabelecer medidas municipais de prevenção e melhorar a utilização segura dos espaços públicos.",
-        icone: ShieldCheck,
-      },
-      {
-        titulo: "Competência municipal",
-        descricao:
-          "A proposta precisará respeitar as competências constitucionais do Município e dos órgãos de segurança.",
+          "Promover transparência na divulgação dos tributos municipais e identificar oportunidades de simplificação e redução responsável da carga tributária.",
         icone: Landmark,
       },
       {
-        titulo: "Impacto financeiro",
+        titulo: "Transparência tributária",
         descricao:
-          "Será necessário avaliar custos de implementação, estrutura administrativa e disponibilidade orçamentária.",
+          "Prever diretrizes para a divulgação de informações sobre arrecadação, alterações tributárias, benefícios fiscais e custos de cumprimento das obrigações.",
+        icone: FileText,
+      },
+      {
+        titulo: "Responsabilidade fiscal",
+        descricao:
+          "Exigir a observância dos requisitos legais e a avaliação do impacto orçamentário-financeiro quando houver renúncia de receita.",
         icone: Wallet,
+      },
+      {
+        titulo: "Limites jurídicos",
+        descricao:
+          "A proposta trata dos tributos municipais. Não pretende alterar impostos estaduais, como ICMS e IPVA, nem tributos federais.",
+        icone: Scale,
       },
     ],
     dificuldade: "A avaliar",
     analise:
-      "A dificuldade dependerá do texto definitivo, da competência legislativa, dos custos e do apoio político. Não é possível estimar a aprovação sem uma análise concreta.",
+      "A viabilidade depende da análise da competência legislativa, das regras de iniciativa, da legislação tributária municipal e dos impactos orçamentários. O texto deve ser revisado pela Procuradoria Legislativa e por especialistas antes de eventual apresentação formal.",
   },
   {
     id: 2,
-    titulo: "Projeto demonstrativo: Empreendedorismo",
+    titulo:
+      "Transparência, Valorização e Proteção a GCM e ao Monitoramento das Metas de Segurança Pública de Goiânia",
     descricao:
-      "Exemplo de iniciativa para simplificar procedimentos municipais e facilitar a atividade de pequenos negócios.",
-    categoria: "Economia",
-    status: "Exemplo ilustrativo",
-    pdf: "/documentos/projeto-exemplo-2.pdf",
+      "Anteprojeto que estabelece diretrizes para ampliar a transparência da execução do Plano Municipal de Segurança Pública e Defesa Social 2024–2034, acompanhar suas metas e divulgar indicadores agregados de proteção e segurança ocupacional dos integrantes da Guarda Civil Metropolitana.",
+    categoria: "Segurança Pública",
+    status: "Anteprojeto para discussão legislativa",
+    pdf: "/documentos/Transparência, Valorização e Proteção Institucional da Guarda Civil Metropolitana e Monitoramento das Metas de Segurança Pública de Goiânia.pdf",
     caracteristicas: [
       {
         titulo: "Objetivo",
         descricao:
-          "Estudar a simplificação de procedimentos administrativos para pequenos empreendedores.",
-        icone: Wallet,
+          "Facilitar o acompanhamento público das metas e ações municipais de segurança, contribuindo para uma política orientada a resultados.",
+        icone: ShieldCheck,
       },
       {
-        titulo: "Competência municipal",
+        titulo: "Transparência das metas",
         descricao:
-          "Verificar quais licenças, procedimentos e regras locais podem ser alterados por lei municipal.",
+          "Permitir o acompanhamento de prazos, responsáveis, situação de execução, resultados e informações orçamentárias disponíveis sobre as ações do plano municipal de segurança.",
+        icone: FileText,
+      },
+      {
+        titulo: "Valorização e proteção da GCM",
+        descricao:
+          "Promover a divulgação de indicadores agregados sobre capacitação, equipamentos de proteção, incidentes ocupacionais e medidas preventivas, respeitando a privacidade dos agentes.",
+        icone: ShieldCheck,
+      },
+      {
+        titulo: "Fiscalização e responsabilidade",
+        descricao:
+          "Apoiar o controle social e a fiscalização parlamentar, aproveitando os mecanismos administrativos existentes e preservando informações legalmente sigilosas.",
         icone: Scale,
-      },
-      {
-        titulo: "Impacto financeiro",
-        descricao:
-          "Avaliar eventuais custos administrativos e possíveis efeitos sobre a arrecadação municipal.",
-        icone: Landmark,
       },
     ],
     dificuldade: "A avaliar",
     analise:
-      "A viabilidade dependerá das regras municipais envolvidas, da existência de renúncia de receita, dos requisitos legais e da articulação com os vereadores.",
+      "A viabilidade depende da análise da competência legislativa municipal, das regras de iniciativa e da compatibilidade com a legislação orçamentária, a proteção de dados pessoais e as competências dos órgãos municipais. A proposta busca aperfeiçoar a transparência de um plano já existente, sem criar outro plano de segurança ou interferir na gestão cotidiana da GCM. Recomenda-se revisão jurídica antes de eventual apresentação formal.",
   },
 ];
 
-const categorias = ["Todos", "Segurança", "Economia"];
+const categorias = [
+  "Todos",
+  "Tributação",
+  "Segurança Pública",
+];
 
 function MiniaturaPDF({ titulo }) {
   return (
@@ -92,6 +109,7 @@ function MiniaturaPDF({ titulo }) {
           <div className="flex h-7 w-7 items-center justify-center rounded bg-[#111b30]">
             <Landmark size={15} className="text-[#f5b82e]" />
           </div>
+
           <div className="flex-1">
             <div className="h-1.5 w-14 rounded bg-gray-500" />
             <div className="mt-1 h-1 w-10 rounded bg-gray-300" />
@@ -150,7 +168,6 @@ function ModalProjeto({ projeto, fechar }) {
             exit={{ opacity: 0, y: 10, scale: 0.98 }}
             transition={{ duration: 0.2 }}
           >
-            {/* Cabeçalho fixo */}
             <div className="flex shrink-0 items-start justify-between gap-3 border-b border-white/10 p-4 sm:p-5">
               <div className="min-w-0">
                 <span className="text-xs font-bold uppercase tracking-[0.15em] text-[#f5b82e]">
@@ -179,7 +196,6 @@ function ModalProjeto({ projeto, fechar }) {
               </button>
             </div>
 
-            {/* Somente esta área terá rolagem */}
             <div className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain p-4 sm:p-5">
               <div>
                 <h3 className="mb-4 text-base font-bold">
@@ -200,6 +216,7 @@ function ModalProjeto({ projeto, fechar }) {
                           <h4 className="text-sm font-semibold">
                             {item.titulo}
                           </h4>
+
                           <p className="mt-1 text-sm leading-5 text-slate-300">
                             {item.descricao}
                           </p>
@@ -212,7 +229,11 @@ function ModalProjeto({ projeto, fechar }) {
 
               <div className="rounded-xl border border-white/10 bg-[#172338] p-4">
                 <div className="flex items-center gap-2">
-                  <Scale size={18} className="shrink-0 text-[#f5b82e]" />
+                  <Scale
+                    size={18}
+                    className="shrink-0 text-[#f5b82e]"
+                  />
+
                   <h3 className="text-sm font-bold">
                     Dificuldade estimada de aprovação
                   </h3>
@@ -229,14 +250,16 @@ function ModalProjeto({ projeto, fechar }) {
 
               <div className="flex items-start gap-2 text-xs leading-5 text-slate-400">
                 <Clock3 size={15} className="mt-0.5 shrink-0" />
+
                 <p>
-                  Situação: {projeto.status}. As informações de tramitação e
-                  viabilidade devem ser atualizadas conforme a situação real.
+                  Este documento é um anteprojeto para discussão política e
+                  técnica. Ainda depende de conferência legislativa, análise
+                  jurídica e avaliação dos impactos orçamentários antes de
+                  eventual protocolo.
                 </p>
               </div>
             </div>
 
-            {/* Rodapé fixo: o botão não rola com o conteúdo */}
             <div className="shrink-0 border-t border-white/10 bg-[#0b1425] p-4 sm:p-5">
               <a
                 href={projeto.pdf}
@@ -263,7 +286,6 @@ export default function Projetos() {
   const [busca, setBusca] = useState("");
   const [selecionado, setSelecionado] = useState(null);
 
-  // Impede que a página de fundo role enquanto o modal estiver aberto.
   useEffect(() => {
     if (!selecionado) return;
 
@@ -279,7 +301,6 @@ export default function Projetos() {
     };
   }, [selecionado]);
 
-  // Permite fechar o modal com a tecla Escape.
   useEffect(() => {
     if (!selecionado) return;
 
@@ -301,7 +322,7 @@ export default function Projetos() {
       categoria === "Todos" || projeto.categoria === categoria;
 
     const texto = `${projeto.titulo} ${projeto.descricao}`.toLowerCase();
-    const correspondeBusca = texto.includes(busca.toLowerCase());
+    const correspondeBusca = texto.includes(busca.toLowerCase().trim());
 
     return correspondeCategoria && correspondeBusca;
   });
@@ -331,6 +352,7 @@ export default function Projetos() {
                 type="button"
                 key={item}
                 onClick={() => setCategoria(item)}
+                aria-pressed={categoria === item}
                 className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
                   categoria === item
                     ? "border-[#f5b82e] bg-[#f5b82e] text-[#101827]"
@@ -344,11 +366,13 @@ export default function Projetos() {
 
           <label className="flex w-full items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 md:max-w-sm">
             <Search size={19} className="shrink-0 text-slate-400" />
+
             <input
               type="search"
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Pesquisar projetos..."
+              aria-label="Pesquisar projetos"
               className="w-full bg-transparent text-sm text-white outline-none placeholder:text-slate-500"
             />
           </label>
@@ -370,6 +394,7 @@ export default function Projetos() {
                   <span className="rounded-full bg-[#f5b82e]/10 px-3 py-1 text-xs font-semibold text-[#f5b82e]">
                     {projeto.categoria}
                   </span>
+
                   <span className="rounded-full bg-white/5 px-3 py-1 text-xs text-slate-300">
                     {projeto.status}
                   </span>
@@ -392,6 +417,7 @@ export default function Projetos() {
                     <Eye size={17} className="text-[#f5b82e]" />
                     Ver detalhes e PDF
                   </span>
+
                   <ChevronRight size={18} className="text-[#f5b82e]" />
                 </button>
               </div>
@@ -402,9 +428,11 @@ export default function Projetos() {
         {projetosFiltrados.length === 0 && (
           <div className="mt-10 rounded-2xl border border-white/10 bg-white/5 px-6 py-12 text-center">
             <FileText className="mx-auto text-slate-400" size={34} />
+
             <h2 className="mt-4 text-lg font-bold">
               Nenhum projeto encontrado
             </h2>
+
             <p className="mt-2 text-sm text-slate-400">
               Tente outro termo ou selecione uma categoria diferente.
             </p>
