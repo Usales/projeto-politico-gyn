@@ -74,3 +74,8 @@ select {
     scroll-behavior: auto;
   }
 }
+
+/* Deixa o mapa-base em tons de cinza (os polígonos continuam coloridos) */
+.mapa-cinza {
+  filter: grayscale(1) contrast(0.92) brightness(1.06);
+}

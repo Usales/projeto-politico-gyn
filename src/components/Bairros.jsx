@@ -1,4 +1,4 @@
-
+import MapaBairros from "./MapaBairros";
 import { useMemo, useState } from "react";
 import {
   MapPin,
@@ -9,7 +9,10 @@ import {
 } from "lucide-react";
 
 const bairrosIniciais = [
+  { nome: "Conjunto Palmares", regiao: "Leste", visitado: false, data: "" },
   { nome: "Santo Hilário", regiao: "Norte", visitado: false, data: "" },
+  { nome: "Parque das Amendoeiras", regiao: "Norte", visitado: false, data: "" },
+  { nome: "Recanto das Minas Gerais", regiao: "Norte", visitado: false, data: "" },
   { nome: "Jardim Guanabara", regiao: "Norte", visitado: false, data: "" },
   { nome: "Jaó", regiao: "Norte", visitado: false, data: "" },
   { nome: "Setor Urias Magalhães", regiao: "Norte", visitado: false, data: "" },
@@ -140,6 +143,17 @@ export default function Bairros() {
             <p className="mt-2 text-sm text-white/60">
               Do planejamento cadastrado
             </p>
+          </div>
+        </div>
+
+        {/* Mapa */}
+        <div className="mt-10">
+          <h2 className="font-display text-2xl font-bold">Mapa de Goiânia</h2>
+          <p className="mt-2 text-sm text-white/60">
+            Em verde, os bairros visitados. Em vermelho, os que ainda serão visitados.
+          </p>
+          <div className="mt-5">
+            <MapaBairros bairros={bairros} />
           </div>
         </div>
 
