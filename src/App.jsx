@@ -1,12 +1,6 @@
-
 import { MotionConfig } from "framer-motion";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  useLocation,
-  ScrollRestoration,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 import Header from "./components/Header";
 import Hero from "./components/Hero";
@@ -19,6 +13,24 @@ import Footer from "./components/Footer";
 import WhatsAppFloat from "./components/WhatsAppFloat";
 import Bairros from "./components/Bairros";
 import Projetos from "./components/Projetos";
+import Comentarios from "./components/Comentarios";
+
+// Ao trocar de página, volta ao topo (ou rola até a seção, se o link tiver #)
+function ScrollAoTrocar() {
+  const { pathname, hash } = useLocation();
+
+  useEffect(() => {
+    if (hash) {
+      setTimeout(() => {
+        document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: "smooth" });
+      }, 80);
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, [pathname, hash]);
+
+  return null;
+}
 
 function PaginaInicial() {
   return (
@@ -41,17 +53,25 @@ function PaginaBairros() {
   );
 }
 
-function Conteudo() {
-  const location = useLocation();
+function PaginaOpinioes() {
+  return (
+    <main className="min-h-screen bg-paper pt-12">
+      <Comentarios />
+    </main>
+  );
+}
 
+function Conteudo() {
   return (
     <>
+      <ScrollAoTrocar />
       <Header />
 
       <Routes>
         <Route path="/" element={<PaginaInicial />} />
         <Route path="/bairros" element={<PaginaBairros />} />
         <Route path="/projetos" element={<Projetos />} />
+        <Route path="/opinioes" element={<PaginaOpinioes />} />
         <Route
           path="*"
           element={

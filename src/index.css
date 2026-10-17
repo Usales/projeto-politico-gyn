@@ -43,6 +43,13 @@ input,
 textarea,
 select {
   font-size: 16px;
+}
+
+/* Remove o estilo nativo só dos campos de texto (iOS arredonda e dá sombra interna).
+   Checkbox e radio ficam de fora, senão desaparecem. */
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
   -webkit-appearance: none;
   appearance: none;
 }

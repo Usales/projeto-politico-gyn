@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 
 /**
@@ -6,9 +5,10 @@ import { useEffect, useState } from "react";
  * o item correspondente no menu de navegação.
  *
  * @param {string[]} ids - IDs das seções monitoradas.
+ * @param {string} pathname - Página atual (refaz a busca ao trocar de página).
  * @returns {string} ID da seção ativa.
  */
-export function useActiveSection(ids = []) {
+export function useActiveSection(ids = [], pathname = "") {
   const [active, setActive] = useState(() => ids[0] ?? "");
 
   // Mantém uma dependência estável quando os IDs não mudam.
@@ -22,57 +22,57 @@ export function useActiveSection(ids = []) {
       return;
     }
 
-    const sections = sectionIds
-      .map((id) => document.getElementById(id))
-      .filter(Boolean);
-
-    if (sections.length === 0) {
+    if (typeof IntersectionObserver === "undefined") {
       setActive(sectionIds[0]);
       return;
     }
 
-    // Compatibilidade com ambientes sem IntersectionObserver.
-    if (typeof IntersectionObserver === "undefined") {
-      setActive(sections[0].id);
-      return;
-    }
+    let observer;
 
-    let currentActive = "";
+    // Pequena espera: a página nova precisa terminar de montar
+    const timer = setTimeout(() => {
+      const sections = sectionIds
+        .map((id) => document.getElementById(id))
+        .filter(Boolean);
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleSections = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort(
-            (a, b) =>
-              a.boundingClientRect.top - b.boundingClientRect.top
-          );
-
-        if (visibleSections.length === 0) return;
-
-        const nextActive = visibleSections[0].target.id;
-
-        if (nextActive && nextActive !== currentActive) {
-          currentActive = nextActive;
-          setActive(nextActive);
-        }
-      },
-      {
-        root: null,
-        rootMargin: "-20% 0px -60% 0px",
-        threshold: 0,
+      if (sections.length === 0) {
+        setActive(sectionIds[0]);
+        return;
       }
-    );
 
-    sections.forEach((section) => observer.observe(section));
+      let currentActive = sections[0].id;
+      setActive(currentActive);
 
-    // Define um valor inicial válido.
-    const initialActive = sections[0].id;
-    currentActive = initialActive;
-    setActive(initialActive);
+      observer = new IntersectionObserver(
+        (entries) => {
+          const visibleSections = entries
+            .filter((entry) => entry.isIntersecting)
+            .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
 
-    return () => observer.disconnect();
-  }, [idsKey]);
+          if (visibleSections.length === 0) return;
+
+          const nextActive = visibleSections[0].target.id;
+
+          if (nextActive && nextActive !== currentActive) {
+            currentActive = nextActive;
+            setActive(nextActive);
+          }
+        },
+        {
+          root: null,
+          rootMargin: "-20% 0px -60% 0px",
+          threshold: 0,
+        }
+      );
+
+      sections.forEach((section) => observer.observe(section));
+    }, 150);
+
+    return () => {
+      clearTimeout(timer);
+      observer?.disconnect();
+    };
+  }, [idsKey, pathname]);
 
   return active;
 }

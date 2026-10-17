@@ -1,20 +1,10 @@
-
 import { useEffect, useState } from "react";
-import {
-  AnimatePresence,
-  motion,
-  useScroll,
-  useSpring,
-} from "framer-motion";
-import {
-  Menu,
-  X,
-  ArrowRight,
-  ChevronDown,
-} from "lucide-react";
+import { AnimatePresence, motion, useScroll, useSpring } from "framer-motion";
+import { Menu, X, ArrowRight, ChevronDown } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useActiveSection } from "../hooks/useActiveSection";
 
+// Seções da página inicial (âncoras)
 const links = [
   { label: "Propostas", id: "propostas" },
   { label: "Como eu atuo", id: "atuacao" },
@@ -23,28 +13,25 @@ const links = [
   { label: "Participe", id: "participe" },
 ];
 
+// Páginas independentes (rotas)
 const acompanhar = [
+  { label: "Opiniões da população", id: "opinioes", path: "/opinioes" },
   { label: "Bairros visitados", id: "bairros", path: "/bairros" },
   { label: "Projetos de Lei", id: "projetos", path: "/projetos" },
   { label: "Vídeos", id: "videos", path: "/videos" },
 ];
 
-const ids = [
-  "inicio",
-  ...links.map((l) => l.id),
-];
+const ids = ["inicio", ...links.map((l) => l.id)];
 
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [submenuOpen, setSubmenuOpen] = useState(false);
 
-  const active = useActiveSection(ids);
   const location = useLocation();
   const navigate = useNavigate();
-
   const isHome = location.pathname === "/";
-  const isBairros = location.pathname === "/bairros";
+  const active = useActiveSection(ids, location.pathname);
 
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -55,10 +42,8 @@ export default function Header() {
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
-
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-
     return () => window.removeEventListener("scroll", onScroll);
   }, [location.pathname]);
 
@@ -71,7 +56,6 @@ export default function Header() {
         setSubmenuOpen(false);
       }
     };
-
     const onResize = () => {
       if (window.innerWidth >= 1024) {
         setOpen(false);
@@ -81,7 +65,6 @@ export default function Header() {
 
     window.addEventListener("keydown", onKey);
     window.addEventListener("resize", onResize);
-
     return () => {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
@@ -89,35 +72,26 @@ export default function Header() {
     };
   }, [open]);
 
-  // Navega até uma seção da página inicial.
+  // Leva a uma seção da página inicial
   function irPara(e, id) {
     e.preventDefault();
-
     setOpen(false);
     setSubmenuOpen(false);
 
+    const rolar = () =>
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+
     if (!isHome) {
       navigate("/");
-      window.setTimeout(() => {
-        document.getElementById(id)?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }, 150);
-
+      window.setTimeout(rolar, 200);
       return;
     }
-
-    document.getElementById(id)?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    rolar();
   }
 
-  // Abre páginas independentes.
+  // Abre uma página independente
   function abrirPagina(e, path) {
     e.preventDefault();
-
     setOpen(false);
     setSubmenuOpen(false);
 
@@ -130,10 +104,10 @@ export default function Header() {
 
   const linkClass = (id) =>
     `text-sm font-medium transition hover:text-gold-400 ${
-      isHome && active === id
-        ? "text-gold-400"
-        : "text-white/80"
+      isHome && active === id ? "text-gold-400" : "text-white/80"
     }`;
+
+  const submenuAtivo = acompanhar.some((l) => l.path === location.pathname);
 
   return (
     <>
@@ -156,16 +130,18 @@ export default function Header() {
 
           {/* Menu desktop */}
           <nav className="hidden items-center gap-6 lg:flex">
-            {links.slice(0, 4).map((l) => (
-              <a
-                key={l.id}
-                href={`/#${l.id}`}
-                onClick={(e) => irPara(e, l.id)}
-                className={linkClass(l.id)}
-              >
-                {l.label}
-              </a>
-            ))}
+            {links
+              .filter((l) => l.id !== "participe")
+              .map((l) => (
+                <a
+                  key={l.id}
+                  href={`/#${l.id}`}
+                  onClick={(e) => irPara(e, l.id)}
+                  className={linkClass(l.id)}
+                >
+                  {l.label}
+                </a>
+              ))}
 
             {/* Submenu Acompanhe */}
             <div
@@ -176,24 +152,15 @@ export default function Header() {
               <button
                 type="button"
                 onClick={() => setSubmenuOpen((v) => !v)}
-                onKeyDown={(e) => {
-                  if (e.key === "Escape") setSubmenuOpen(false);
-                }}
                 aria-expanded={submenuOpen}
                 className={`flex items-center gap-1 text-sm font-medium transition hover:text-gold-400 ${
-                  acompanhar.some(
-                    (l) => l.path === location.pathname
-                  )
-                    ? "text-gold-400"
-                    : "text-white/80"
+                  submenuAtivo ? "text-gold-400" : "text-white/80"
                 }`}
               >
                 Acompanhe
                 <ChevronDown
                   size={15}
-                  className={`transition-transform ${
-                    submenuOpen ? "rotate-180" : ""
-                  }`}
+                  className={`transition-transform ${submenuOpen ? "rotate-180" : ""}`}
                 />
               </button>
 
@@ -204,28 +171,27 @@ export default function Header() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
                     transition={{ duration: 0.18 }}
-                    className="absolute right-0 top-full z-50 mt-3 w-56 overflow-hidden rounded-xl border border-white/10 bg-navy-950 p-2 shadow-xl"
+                    className="absolute right-0 top-full z-50 w-64 pt-3"
                   >
-                    {acompanhar.map((l) => (
-                      <Link
-                        key={l.id}
-                        to={l.path}
-                        onClick={(e) => abrirPagina(e, l.path)}
-                        className={`block rounded-lg px-4 py-3 text-sm transition hover:bg-white/5 hover:text-gold-400 ${
-                          location.pathname === l.path
-                            ? "text-gold-400"
-                            : "text-white/80"
-                        }`}
-                      >
-                        {l.label}
-                      </Link>
-                    ))}
+                    <div className="overflow-hidden rounded-xl border border-white/10 bg-navy-950 p-2 shadow-xl">
+                      {acompanhar.map((l) => (
+                        <Link
+                          key={l.id}
+                          to={l.path}
+                          onClick={(e) => abrirPagina(e, l.path)}
+                          className={`block rounded-lg px-4 py-3 text-sm transition hover:bg-white/5 hover:text-gold-400 ${
+                            location.pathname === l.path ? "text-gold-400" : "text-white/80"
+                          }`}
+                        >
+                          {l.label}
+                        </Link>
+                      ))}
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
 
-            {/* Participe */}
             <a
               href="/#participe"
               onClick={(e) => irPara(e, "participe")}
@@ -234,7 +200,6 @@ export default function Header() {
               Participe
             </a>
 
-            {/* Contato */}
             <a
               href="/#participe"
               onClick={(e) => irPara(e, "participe")}
@@ -285,9 +250,7 @@ export default function Header() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.04 * i }}
                   className={`font-display border-b border-white/10 py-3 text-2xl font-bold ${
-                    isHome && active === l.id
-                      ? "text-gold-400"
-                      : "text-white"
+                    isHome && active === l.id ? "text-gold-400" : "text-white"
                   }`}
                 >
                   {l.label}
@@ -304,17 +267,13 @@ export default function Header() {
                     key={l.id}
                     initial={{ opacity: 0, x: -15 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{
-                      delay: 0.04 * (links.length + i),
-                    }}
+                    transition={{ delay: 0.04 * (links.length + i) }}
                   >
                     <Link
                       to={l.path}
                       onClick={(e) => abrirPagina(e, l.path)}
                       className={`block border-b border-white/10 py-3 text-lg ${
-                        location.pathname === l.path
-                          ? "text-gold-400"
-                          : "text-white/80"
+                        location.pathname === l.path ? "text-gold-400" : "text-white/80"
                       }`}
                     >
                       {l.label}

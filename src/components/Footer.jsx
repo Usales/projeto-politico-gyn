@@ -1,19 +1,28 @@
 import { ArrowUp } from "lucide-react";
+import { Link } from "react-router-dom";
 import { contato } from "../data/site";
 
-const links = [
-  { label: "Propostas", href: "#propostas" },
-  { label: "Como eu atuo", href: "#atuacao" },
-  { label: "Sobre", href: "#sobre" },
-  { label: "Dúvidas", href: "#duvidas" },
-  { label: "Participe", href: "#participe" },
+// Seções da página inicial
+const secoes = [
+  { label: "Propostas", href: "/#propostas" },
+  { label: "Como eu atuo", href: "/#atuacao" },
+  { label: "Sobre", href: "/#sobre" },
+  { label: "Dúvidas", href: "/#duvidas" },
+  { label: "Participe", href: "/#participe" },
+];
+
+// Páginas independentes
+const paginas = [
+  { label: "Opiniões da população", to: "/opinioes" },
+  { label: "Bairros visitados", to: "/bairros" },
+  { label: "Projetos de Lei", to: "/projetos" },
 ];
 
 export default function Footer() {
   return (
     <footer className="safe-bottom bg-navy-950 pt-14 text-white/60">
-      <div className="mx-auto max-w-6xl">
-        <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
+      <div className="mx-auto max-w-6xl px-5">
+        <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
           <div>
             <p className="font-display text-xl font-bold text-white">
               Gabriel <span className="text-gold-400">Henriques</span>
@@ -23,12 +32,29 @@ export default function Footer() {
             </p>
           </div>
 
-          <nav className="grid grid-cols-2 gap-x-10 gap-y-3 text-sm">
-            {links.map((l) => (
-              <a key={l.href} href={l.href} className="py-1 transition hover:text-gold-400">
-                {l.label}
-              </a>
-            ))}
+          <nav className="grid grid-cols-2 gap-x-12 gap-y-3 text-sm">
+            <div className="space-y-2">
+              {secoes.map((l) => (
+                <Link
+                  key={l.href}
+                  to={l.href}
+                  className="block py-1 transition hover:text-gold-400"
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+            <div className="space-y-2">
+              {paginas.map((l) => (
+                <Link
+                  key={l.to}
+                  to={l.to}
+                  className="block py-1 transition hover:text-gold-400"
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </div>
           </nav>
 
           <button

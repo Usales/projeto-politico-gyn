@@ -1,0 +1,24 @@
+name: Supabase keep-alive
+
+on:
+  schedule:
+    - cron: "0 9 * * *" # todo dia às 09:00 UTC (06:00 em Goiânia)
+  workflow_dispatch: # permite rodar manualmente para testar
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consultar o banco
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          status=$(curl -s -o /dev/null -w "%{http_code}" \
+            "$SUPABASE_URL/rest/v1/comentarios?select=id&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY")
+          echo "Resposta do Supabase: $status"
+          if [ "$status" -ne 200 ]; then
+            echo "Falha ao consultar o banco"
+            exit 1
+          fi
