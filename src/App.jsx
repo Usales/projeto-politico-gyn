@@ -14,6 +14,7 @@ import WhatsAppFloat from "./components/WhatsAppFloat";
 import Bairros from "./components/Bairros";
 import Projetos from "./components/Projetos";
 import Comentarios from "./components/Comentarios";
+import Videos from "./components/Videos";
 
 // Ao trocar de página, volta ao topo (ou rola até a seção, se o link tiver #)
 function ScrollAoTrocar() {
@@ -71,6 +72,7 @@ function Conteudo() {
         <Route path="/" element={<PaginaInicial />} />
         <Route path="/bairros" element={<PaginaBairros />} />
         <Route path="/projetos" element={<Projetos />} />
+        <Route path="/videos" element={<Videos />} />
         <Route path="/opinioes" element={<PaginaOpinioes />} />
         <Route
           path="*"

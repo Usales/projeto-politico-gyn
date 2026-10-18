@@ -16,6 +16,7 @@ const paginas = [
   { label: "Opiniões da população", to: "/opinioes" },
   { label: "Bairros visitados", to: "/bairros" },
   { label: "Projetos de Lei", to: "/projetos" },
+  { label: "Vídeos", to: "/videos" },
 ];
 
 export default function Footer() {
