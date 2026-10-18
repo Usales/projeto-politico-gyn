@@ -42,7 +42,7 @@ export default function Videos() {
             Acompanhe
           </span>
 
-          <h1 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+          <h1 className="font-display mt-4 text-4xl font-extrabold sm:text-5xl lg:text-6xl">
             <span className="text-[#f5b82e]">Vídeos</span>
           </h1>
 
@@ -105,7 +105,7 @@ export default function Videos() {
                   Publicado em {formatarData(atual.data)}
                 </p>
 
-                <h2 className="mt-3 text-2xl font-bold leading-snug sm:text-3xl">
+                <h2 className="font-display mt-3 text-2xl font-bold leading-snug sm:text-3xl">
                   {atual.titulo}
                 </h2>
 

@@ -335,7 +335,7 @@ export default function Projetos() {
             Transparência legislativa
           </span>
 
-          <h1 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+          <h1 className="font-display mt-4 text-4xl font-extrabold sm:text-5xl lg:text-6xl">
             Projetos de <span className="text-[#f5b82e]">Lei</span>
           </h1>
 
@@ -400,7 +400,7 @@ export default function Projetos() {
                   </span>
                 </div>
 
-                <h2 className="mt-4 text-xl font-bold leading-snug">
+                <h2 className="font-display mt-2 text-xl font-bold leading-tight sm:text-2xl">
                   {projeto.titulo}
                 </h2>
 
@@ -429,7 +429,7 @@ export default function Projetos() {
           <div className="mt-10 rounded-2xl border border-white/10 bg-white/5 px-6 py-12 text-center">
             <FileText className="mx-auto text-slate-400" size={34} />
 
-            <h2 className="mt-4 text-lg font-bold">
+            <h2 className="font-display mt-2 text-xl font-bold leading-tight sm:text-2xl">
               Nenhum projeto encontrado
             </h2>
 
