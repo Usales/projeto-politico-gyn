@@ -1,6 +1,9 @@
+import { useEffect, useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
+import { Eye, BriefcaseBusiness, Scale, Volume2 } from "lucide-react";
 
-import { motion } from "framer-motion";
-import { Eye, BriefcaseBusiness, Scale } from "lucide-react";
+// ID do vídeo no YouTube (a parte depois de "v=" no link)
+const YOUTUBE_ID = "IBfWH6IWmWI";
 
 const valores = [
   {
@@ -19,6 +22,67 @@ const valores = [
     icon: Scale,
   },
 ];
+
+function VideoSobre() {
+  const caixaRef = useRef(null);
+  const iframeRef = useRef(null);
+  const naTela = useInView(caixaRef, { amount: 0.5 });
+  const [carregado, setCarregado] = useState(false);
+
+  // Envia comandos de play/pause para o player do YouTube
+  function comando(func) {
+    iframeRef.current?.contentWindow?.postMessage(
+      JSON.stringify({ event: "command", func, args: [] }),
+      "*"
+    );
+  }
+
+  useEffect(() => {
+    // Primeira vez que chega na seção: carrega o player já tocando
+    if (naTela && !carregado) {
+      setCarregado(true);
+      return;
+    }
+    // Depois: toca ao entrar na tela e pausa ao sair
+    if (carregado) comando(naTela ? "playVideo" : "pauseVideo");
+  }, [naTela, carregado]);
+
+  const origem = encodeURIComponent(window.location.origin);
+
+  return (
+    <>
+      <div
+        ref={caixaRef}
+        className="relative aspect-video w-full overflow-hidden rounded-2xl border border-white/10 bg-navy-950 shadow-2xl"
+      >
+        {/* Miniatura enquanto o player ainda não carregou */}
+        {!carregado && (
+          <img
+            src={`https://i.ytimg.com/vi/${YOUTUBE_ID}/hqdefault.jpg`}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        )}
+
+        {carregado && (
+          <iframe
+            ref={iframeRef}
+            src={`https://www.youtube.com/embed/${YOUTUBE_ID}?autoplay=1&mute=1&playsinline=1&rel=0&enablejsapi=1&origin=${origem}`}            title="Para onde vai o dinheiro de Goiânia"
+            allow="autoplay; encrypted-media; picture-in-picture; web-share"
+            allowFullScreen
+            referrerPolicy="strict-origin-when-cross-origin"
+            className="h-full w-full"
+          />
+        )}
+      </div>
+
+      <p className="mt-3 flex items-center gap-2 text-xs text-white/50">
+        <Volume2 size={14} className="shrink-0" />
+        O vídeo começa sem som. Toque no ícone de som do player para ativar o áudio.
+      </p>
+    </>
+  );
+}
 
 export default function Sobre() {
   return (
@@ -43,26 +107,11 @@ export default function Sobre() {
             Conservador reformista · Direita
           </p>
 
-          <p className="mt-5 leading-relaxed text-white/75 md:text-lg">
-            Minha trajetória reúne estudos nas áreas de tecnologia, pela
-            Faculdade SENAI FATESG, segurança pública pela Faculdade
-            Sensu e Direito como concurseiro autodidata. Também atuo como empreendedor no setor alimentício.
-            Essas experiências ampliam minha visão sobre gestão, análise
-            de problemas e busca por soluções eficientes, competências
-            fundamentais para uma administração responsável.
+          <p className="mb-3 mt-6 text-sm text-white/60">
+            Assista: Para onde vai o dinheiro de Goiânia
           </p>
 
-          <p className="mt-4 leading-relaxed text-white/75 md:text-lg">
-            Minha visão para Goiânia é pautada pela responsabilidade fiscal,
-            transparência administrativa, segurança pública e liberdade
-            econômica. Acima de tudo, defendo o respeito ao cidadão e a
-            aplicação responsável dos recursos públicos. Faço uma crítica
-            à condução da atual gestão de Sandro Mabel quando a prioridade
-            dada à arrecadação não vem acompanhada, na mesma medida, de
-            melhorias perceptíveis nos serviços oferecidos à população.
-            Acredito que governar exige planejamento, decisões fundamentadas
-            e compromisso permanente com o interesse público.
-          </p>
+          <VideoSobre />
 
           <a
             href="#propostas"
