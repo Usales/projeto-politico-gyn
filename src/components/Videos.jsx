@@ -8,6 +8,13 @@ const CANAL_URL = "https://www.youtube.com/channel/UCoyKBK0rYXIe6g0WcOefx7w";
 // "id" é o código depois de "v=" no link do YouTube. "data" no formato AAAA-MM-DD.
 const videos = [
   {
+    id: "y4fDvVIjbzk",
+    titulo: "É possível reduzir os impostos de Goiânia?",
+    descricao:
+      "Goiânia arrecada bilhões de reais todos os anos. Mas será que é possível reduzir os impostos pagos pelo cidadão sem prejudicar os serviços públicos? Neste vídeo, analiso os números das contas municipais, explico a diferença entre IPTU, ISS e taxas e apresento caminhos para discutir uma política tributária mais eficiente e responsável.",
+    data: "2026-10-19",
+  },
+  {
     id: "IBfWH6IWmWI",
     titulo: "Para onde vai o dinheiro de Goiânia?",
     descricao:
