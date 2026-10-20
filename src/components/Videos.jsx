@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Play, ExternalLink, CalendarDays } from "lucide-react";
+import { useConsentimento } from "../lib/consentimento";
+import AvisoTerceiros from "./AvisoTerceiros";
 
 const CANAL_URL = "https://www.youtube.com/channel/UCoyKBK0rYXIe6g0WcOefx7w";
 
@@ -32,6 +34,7 @@ export default function Videos() {
   const [idAtual, setIdAtual] = useState(videos[0]?.id);
   const [tocando, setTocando] = useState(false);
   const playerRef = useRef(null);
+  const permitido = useConsentimento() === "sim";
 
   const atual = videos.find((v) => v.id === idAtual);
 
@@ -76,7 +79,12 @@ export default function Videos() {
             >
               <div className="lg:col-span-3">
                 <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl">
-                  {tocando ? (
+                  {!permitido ? (
+                    <AvisoTerceiros
+                      servico="o vídeo do YouTube"
+                      link={linkYoutube(atual.id)}
+                    />
+                  ) : tocando ? (
                     <iframe
                       src={`https://www.youtube.com/embed/${atual.id}?autoplay=1&playsinline=1&rel=0`}
                       title={atual.titulo}
@@ -146,7 +154,7 @@ export default function Videos() {
             {/* Grade: só aparece quando houver mais de um vídeo */}
             {videos.length > 1 && (
               <div className="mt-16">
-                <h2 className="text-xl font-bold">Todos os vídeos</h2>
+                <h2 className="font-display text-xl font-bold">Todos os vídeos</h2>
 
                 <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {videos.map((video) => (
@@ -162,12 +170,15 @@ export default function Videos() {
                       }`}
                     >
                       <div className="relative aspect-video bg-black">
-                        <img
-                          src={miniatura(video.id)}
-                          alt=""
-                          loading="lazy"
-                          className="h-full w-full object-cover"
-                        />
+                        {/* Miniatura é do Google: só aparece com permissão */}
+                        {permitido && (
+                          <img
+                            src={miniatura(video.id)}
+                            alt=""
+                            loading="lazy"
+                            className="h-full w-full object-cover"
+                          />
+                        )}
                         <span className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#f5b82e] text-[#101827]">
                           <Play size={18} className="ml-0.5 fill-current" />
                         </span>

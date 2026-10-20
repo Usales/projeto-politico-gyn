@@ -3,6 +3,8 @@ import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { bairrosGeo } from "../data/bairrosGeo";
+import { useConsentimento } from "../lib/consentimento";
+import AvisoTerceiros from "./AvisoTerceiros";
 
 const CENTRO_GOIANIA = [-16.6869, -49.2648];
 
@@ -22,6 +24,7 @@ function AjustarVista() {
 }
 
 export default function MapaBairros({ bairros }) {
+  const permitido = useConsentimento() === "sim";
   const visitados = new Set(bairros.filter((b) => b.visitado).map((b) => b.nome));
 
   const estilo = (feature) => {
@@ -45,31 +48,35 @@ export default function MapaBairros({ bairros }) {
   return (
     // "isolate" evita que o mapa fique por cima do menu fixo do site
     <div className="relative isolate z-0 h-[380px] overflow-hidden rounded-2xl border border-white/10 md:h-[520px]">
-      <MapContainer
-        center={CENTRO_GOIANIA}
-        zoom={11}
-        minZoom={9}
-        scrollWheelZoom={false}
-        dragging={!L.Browser.mobile} // no celular, 1 dedo rola a página e 2 dedos mexem no mapa
-        className="h-full w-full"
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-          className="mapa-cinza"
-        />
-
-        <AjustarVista />
-
-        {bairrosGeo.features.length > 0 && (
-          <GeoJSON
-            key={[...visitados].sort().join("|")}
-            data={bairrosGeo}
-            style={estilo}
-            onEachFeature={aoCriarBairro}
+      {permitido ? (
+        <MapContainer
+          center={CENTRO_GOIANIA}
+          zoom={11}
+          minZoom={9}
+          scrollWheelZoom={false}
+          dragging={!L.Browser.mobile} // no celular, 1 dedo rola a página e 2 dedos mexem no mapa
+          className="h-full w-full"
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+            className="mapa-cinza"
           />
-        )}
-      </MapContainer>
+
+          <AjustarVista />
+
+          {bairrosGeo.features.length > 0 && (
+            <GeoJSON
+              key={[...visitados].sort().join("|")}
+              data={bairrosGeo}
+              style={estilo}
+              onEachFeature={aoCriarBairro}
+            />
+          )}
+        </MapContainer>
+      ) : (
+        <AvisoTerceiros servico="o mapa de Goiânia (OpenStreetMap)" />
+      )}
     </div>
   );
 }

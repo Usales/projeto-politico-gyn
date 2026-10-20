@@ -1,6 +1,7 @@
 import { ArrowUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import { contato } from "../data/site";
+import { definirConsentimento } from "../lib/consentimento";
 
 // Seções da página inicial
 const secoes = [
@@ -61,6 +62,7 @@ export default function Footer() {
           </nav>
 
           <button
+            type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             className="flex h-12 w-12 items-center justify-center self-start rounded-full border border-white/20 text-white transition hover:bg-gold-400 hover:text-navy-950"
             aria-label="Voltar ao topo"
@@ -71,15 +73,26 @@ export default function Footer() {
 
         <div className="mt-10 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs md:flex-row md:items-center md:justify-between">
           <p>© {new Date().getFullYear()} Gabriel Henriques Sales · Goiânia, GO</p>
-          <a
-            href={`https://instagram.com/${contato.instagram}`}
-            target="_blank"
-            rel="noreferrer"
-            className="transition hover:text-gold-400"
-          >
-            @{contato.instagram}
-          </a>
+
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <button
+              type="button"
+              onClick={() => definirConsentimento(null)}
+              className="underline transition hover:text-gold-400"
+            >
+              Preferências de privacidade
+            </button>
+            <a
+              href={`https://instagram.com/${contato.instagram}`}
+              target="_blank"
+              rel="noreferrer"
+              className="transition hover:text-gold-400"
+            >
+              @{contato.instagram}
+            </a>
+          </div>
         </div>
+
         <p className="mt-4 text-xs text-white/40">
           Conteúdo de caráter informativo, de apresentação de ideias e propostas.
         </p>

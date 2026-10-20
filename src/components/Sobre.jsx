@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Eye, BriefcaseBusiness, Scale, Volume2 } from "lucide-react";
+import { useConsentimento } from "../lib/consentimento";
+import AvisoTerceiros from "./AvisoTerceiros";
 
 // ID do vídeo no YouTube (a parte depois de "v=" no link)
 const YOUTUBE_ID = "IBfWH6IWmWI";
@@ -27,9 +29,9 @@ function VideoSobre() {
   const caixaRef = useRef(null);
   const iframeRef = useRef(null);
   const naTela = useInView(caixaRef, { amount: 0.5 });
+  const permitido = useConsentimento() === "sim";
   const [carregado, setCarregado] = useState(false);
 
-  // Envia comandos de play/pause para o player do YouTube
   function comando(func) {
     iframeRef.current?.contentWindow?.postMessage(
       JSON.stringify({ event: "command", func, args: [] }),
@@ -38,14 +40,18 @@ function VideoSobre() {
   }
 
   useEffect(() => {
-    // Primeira vez que chega na seção: carrega o player já tocando
+    // Sem permissão: nada de terceiros é carregado
+    if (!permitido) {
+      setCarregado(false);
+      return;
+    }
+    // Com permissão: carrega ao chegar na seção, toca ao entrar e pausa ao sair
     if (naTela && !carregado) {
       setCarregado(true);
       return;
     }
-    // Depois: toca ao entrar na tela e pausa ao sair
     if (carregado) comando(naTela ? "playVideo" : "pauseVideo");
-  }, [naTela, carregado]);
+  }, [naTela, carregado, permitido]);
 
   const origem = encodeURIComponent(window.location.origin);
 
@@ -55,8 +61,14 @@ function VideoSobre() {
         ref={caixaRef}
         className="relative aspect-video w-full overflow-hidden rounded-2xl border border-white/10 bg-navy-950 shadow-2xl"
       >
-        {/* Miniatura enquanto o player ainda não carregou */}
-        {!carregado && (
+        {!permitido && (
+          <AvisoTerceiros
+            servico="o vídeo do YouTube"
+            link={`https://www.youtube.com/watch?v=${YOUTUBE_ID}`}
+          />
+        )}
+
+        {permitido && !carregado && (
           <img
             src={`https://i.ytimg.com/vi/${YOUTUBE_ID}/hqdefault.jpg`}
             alt=""
@@ -64,10 +76,11 @@ function VideoSobre() {
           />
         )}
 
-        {carregado && (
+        {permitido && carregado && (
           <iframe
             ref={iframeRef}
-            src={`https://www.youtube.com/embed/${YOUTUBE_ID}?autoplay=1&mute=1&playsinline=1&rel=0&enablejsapi=1&origin=${origem}`}            title="Para onde vai o dinheiro de Goiânia"
+            src={`https://www.youtube-nocookie.com/embed/${YOUTUBE_ID}?autoplay=1&mute=1&playsinline=1&rel=0&enablejsapi=1&origin=${origem}`}
+            title="Para onde vai o dinheiro de Goiânia"
             allow="autoplay; encrypted-media; picture-in-picture; web-share"
             allowFullScreen
             referrerPolicy="strict-origin-when-cross-origin"
@@ -76,10 +89,12 @@ function VideoSobre() {
         )}
       </div>
 
-      <p className="mt-3 flex items-center gap-2 text-xs text-white/50">
-        <Volume2 size={14} className="shrink-0" />
-        O vídeo começa sem som. Toque no ícone de som do player para ativar o áudio.
-      </p>
+      {permitido && (
+        <p className="mt-3 flex items-center gap-2 text-xs text-white/50">
+          <Volume2 size={14} className="shrink-0" />
+          O vídeo começa sem som. Toque no ícone de som do player para ativar o áudio.
+        </p>
+      )}
     </>
   );
 }

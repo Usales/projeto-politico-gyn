@@ -16,6 +16,8 @@ import Projetos from "./components/Projetos";
 import Comentarios from "./components/Comentarios";
 import Videos from "./components/Videos";
 import Privacidade from "./components/Privacidade";
+import BannerConsentimento from "./components/BannerConsentimento";
+
 
 // Ao trocar de página, volta ao topo (ou rola até a seção, se o link tiver #)
 function ScrollAoTrocar() {
@@ -100,6 +102,7 @@ function Conteudo() {
 
       <Footer />
       <WhatsAppFloat />
+      <BannerConsentimento />
     </>
   );
 }
