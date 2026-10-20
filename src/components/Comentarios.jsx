@@ -91,7 +91,7 @@ export default function Comentarios() {
     return (e) => setForm({ ...form, [campo]: e.target.value });
   }
 
-  async function enviar(e) {
+   async function enviar(e) {
     e.preventDefault();
     setErro("");
 
@@ -113,14 +113,17 @@ export default function Comentarios() {
       /* se o navegador bloquear o armazenamento, segue normalmente */
     }
 
-    setEnviando(true);
-    const { error } = await supabase.from("comentarios").insert({
+    const nova = {
       nome: form.nome.trim(),
       bairro: form.bairro.trim() || null,
       avaliacao: nota,
       comentario: form.comentario.trim(),
-      meta: coletarMeta(),
-    });
+    };
+
+    setEnviando(true);
+    const { error } = await supabase
+      .from("comentarios")
+      .insert({ ...nova, meta: coletarMeta() });
     setEnviando(false);
 
     if (error) {
@@ -132,6 +135,13 @@ export default function Comentarios() {
     } catch {
       /* ignorar */
     }
+
+    // Mostra na lista imediatamente
+    setLista((atual) => [
+      { id: crypto.randomUUID(), created_at: new Date().toISOString(), ...nova },
+      ...atual,
+    ]);
+
     setEnviado(true);
     setForm({ nome: "", bairro: "", comentario: "", site: "" });
     setNota(0);
@@ -192,7 +202,7 @@ export default function Comentarios() {
                   Opinião recebida!
                 </h3>
                 <p className="mt-2 text-navy-900/70">
-                  Obrigado por participar. Ela será analisada e publicada em breve.
+                  Obrigado por participar! Sua opinião já está publicada na lista.
                 </p>
                 <button
                   type="button"
@@ -264,8 +274,8 @@ export default function Comentarios() {
                       Tenho 18 anos ou mais. Concordo, de forma específica, que meu
                       nome, minha nota e minha opinião, que podem revelar minhas
                       convicções políticas, sejam exibidos publicamente neste site
-                      após análise, e que o tipo de aparelho, o idioma e o fuso
-                      horário sejam guardados para estatísticas gerais. Li a{" "}
+                      assim que eu enviar, e que o tipo de aparelho, o idioma e o
+                      fuso horário sejam guardados para estatísticas gerais. Li a{" "}
                       <a
                         href="/privacidade#politica"
                         target="_blank"

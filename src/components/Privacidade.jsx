@@ -90,8 +90,7 @@ const politica = [
   {
     titulo: "10. Segurança",
     texto: [
-      "Uso conexão segura (HTTPS), regras no banco de dados que impedem a leitura pública dos dados técnicos e moderação das opiniões. Nenhum sistema é 100% seguro. Em caso de incidente relevante, comunicarei os titulares e a ANPD, como a lei determina.",
-    ],
+      "Uso conexão segura (HTTPS), regras no banco de dados que impedem a leitura pública dos dados técnicos e remoção de opiniões que descumpram os Termos de Uso. As opiniões são publicadas assim que enviadas e revisadas depois. Nenhum sistema é 100% seguro. Em caso de incidente relevante, comunicarei os titulares e a ANPD, como a lei determina.",    ],
   },
   {
     titulo: "11. Mudanças nesta política",
