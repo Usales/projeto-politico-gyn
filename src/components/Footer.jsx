@@ -17,6 +17,8 @@ const paginas = [
   { label: "Bairros visitados", to: "/bairros" },
   { label: "Projetos de Lei", to: "/projetos" },
   { label: "Vídeos", to: "/videos" },
+  { label: "Política de Privacidade", to: "/privacidade#politica" },
+  { label: "Termos de Uso", to: "/privacidade#termos" },
 ];
 
 export default function Footer() {

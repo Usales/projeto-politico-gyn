@@ -53,8 +53,6 @@ function coletarMeta() {
       : "Computador/Outro",
     idioma: navigator.language,
     fuso: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    tela: `${window.screen.width}x${window.screen.height}`,
-    origem: (document.referrer || "direto").slice(0, 200),
   };
 }
 
@@ -231,7 +229,7 @@ export default function Comentarios() {
                 <div>
                   <textarea
                     className={`${campo} min-h-36 resize-none`}
-                    placeholder="Sua opinião"
+                    placeholder="Sua opinião (não inclua dados pessoais de terceiros)"
                     required
                     minLength={5}
                     maxLength={600}
@@ -262,11 +260,22 @@ export default function Comentarios() {
                     onChange={(e) => setAceito(e.target.checked)}
                     className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer rounded border-navy-900/30 accent-[#e8a317]"
                   />
-                  <span>
-                    Concordo que meu nome, nota e opinião sejam exibidos publicamente após
-                    análise, e que dados técnicos básicos (tipo de aparelho, idioma, fuso
-                    horário) sejam guardados apenas para fins estatísticos.
-                  </span>
+                    <span>
+                      Tenho 18 anos ou mais. Concordo, de forma específica, que meu
+                      nome, minha nota e minha opinião, que podem revelar minhas
+                      convicções políticas, sejam exibidos publicamente neste site
+                      após análise, e que o tipo de aparelho, o idioma e o fuso
+                      horário sejam guardados para estatísticas gerais. Li a{" "}
+                      <a
+                        href="/privacidade#politica"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-semibold underline"
+                      >
+                        Política de Privacidade
+                      </a>{" "}
+                      e sei que posso pedir a exclusão a qualquer momento.
+                    </span>
                 </label>
 
                 {erro && (

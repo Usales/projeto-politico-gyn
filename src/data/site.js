@@ -1,4 +1,3 @@
-
 import {
   Wallet,
   Eye,
@@ -15,6 +14,8 @@ import {
 export const contato = {
   whatsapp: "5562995227774",
   instagram: "gabrielhenriques.gyn",
+  // Canal de privacidade (LGPD): use um e-mail só da campanha
+  email: "SEU-EMAIL-AQUI@exemplo.com",
 
   get whatsappUrl() {
     return `https://wa.me/${this.whatsapp}`;
@@ -40,7 +41,7 @@ export const perfil = {
  * Propostas e temas de atuação pública.
  *
  * Os textos expressam objetivos e compromissos de atuação,
- * não resultados garantidos nem competências exclusivas do vereador.
+ * não resultados garantidos nem competências exclusivas de um cargo.
  */
 export const propostas = [
   {
