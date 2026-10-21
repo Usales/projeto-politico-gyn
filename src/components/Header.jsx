@@ -1,10 +1,22 @@
+
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useScroll, useSpring } from "framer-motion";
-import { Menu, X, ArrowRight, ChevronDown, LockKeyhole } from "lucide-react";
+import {
+  AnimatePresence,
+  motion,
+  useScroll,
+  useSpring,
+} from "framer-motion";
+import {
+  Menu,
+  X,
+  ArrowRight,
+  ChevronDown,
+  LockKeyhole,
+} from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useActiveSection } from "../hooks/useActiveSection";
 
-// Seções da página inicial (âncoras)
+// Seções da página inicial
 const links = [
   { label: "Propostas", id: "propostas" },
   { label: "Como eu atuo", id: "atuacao" },
@@ -13,12 +25,28 @@ const links = [
   { label: "Participe", id: "participe" },
 ];
 
-// Páginas independentes (rotas)
+// Páginas públicas independentes
 const acompanhar = [
-  { label: "Opiniões da população", id: "opinioes", path: "/opinioes" },
-  { label: "Bairros visitados", id: "bairros", path: "/bairros" },
-  { label: "Projetos de Lei", id: "projetos", path: "/projetos" },
-  { label: "Vídeos", id: "videos", path: "/videos" },
+  {
+    label: "Opiniões da população",
+    id: "opinioes",
+    path: "/opinioes",
+  },
+  {
+    label: "Bairros visitados",
+    id: "bairros",
+    path: "/bairros",
+  },
+  {
+    label: "Projetos de Lei",
+    id: "projetos",
+    path: "/projetos",
+  },
+  {
+    label: "Vídeos",
+    id: "videos",
+    path: "/videos",
+  },
 ];
 
 const ids = ["inicio", ...links.map((l) => l.id)];
@@ -30,10 +58,12 @@ export default function Header() {
 
   const location = useLocation();
   const navigate = useNavigate();
+
   const isHome = location.pathname === "/";
   const active = useActiveSection(ids, location.pathname);
 
   const { scrollYProgress } = useScroll();
+
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 120,
     damping: 30,
@@ -42,29 +72,34 @@ export default function Header() {
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
+
     onScroll();
+
     window.addEventListener("scroll", onScroll, { passive: true });
+
     return () => window.removeEventListener("scroll", onScroll);
   }, [location.pathname]);
 
+  // Fecha menus com Escape e controla o bloqueio de rolagem no celular.
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
 
-    const onKey = (e) => {
+    function onKey(e) {
       if (e.key === "Escape") {
         setOpen(false);
         setSubmenuOpen(false);
       }
-    };
-    const onResize = () => {
+    }
+
+    function onResize() {
       if (window.innerWidth >= 1024) {
         setOpen(false);
-        setSubmenuOpen(false);
       }
-    };
+    }
 
     window.addEventListener("keydown", onKey);
     window.addEventListener("resize", onResize);
+
     return () => {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
@@ -72,26 +107,38 @@ export default function Header() {
     };
   }, [open]);
 
-  // Leva a uma seção da página inicial
+  // Fecha o submenu ao navegar para outra rota.
+  useEffect(() => {
+    setSubmenuOpen(false);
+  }, [location.pathname]);
+
+  // Navega para uma seção da página inicial.
   function irPara(e, id) {
     e.preventDefault();
+
     setOpen(false);
     setSubmenuOpen(false);
 
-    const rolar = () =>
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const rolar = () => {
+      document.getElementById(id)?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    };
 
     if (!isHome) {
       navigate("/");
       window.setTimeout(rolar, 200);
       return;
     }
+
     rolar();
   }
 
-  // Abre uma página independente
+  // Navega para uma página pública independente.
   function abrirPagina(e, path) {
     e.preventDefault();
+
     setOpen(false);
     setSubmenuOpen(false);
 
@@ -102,12 +149,20 @@ export default function Header() {
     }
   }
 
+  function abrirLogin() {
+    setOpen(false);
+    setSubmenuOpen(false);
+    navigate("/login");
+  }
+
   const linkClass = (id) =>
     `text-sm font-medium transition hover:text-gold-400 ${
       isHome && active === id ? "text-gold-400" : "text-white/80"
     }`;
 
-  const submenuAtivo = acompanhar.some((l) => l.path === location.pathname);
+  const submenuAtivo = acompanhar.some(
+    (l) => l.path === location.pathname
+  );
 
   return (
     <>
@@ -143,24 +198,25 @@ export default function Header() {
                 </a>
               ))}
 
-            {/* Submenu Acompanhe */}
-            <div
-              className="relative"
-              onMouseEnter={() => setSubmenuOpen(true)}
-              onMouseLeave={() => setSubmenuOpen(false)}
-            >
+            {/* Acompanhe: abre e fecha exclusivamente por clique */}
+            <div className="relative">
               <button
                 type="button"
                 onClick={() => setSubmenuOpen((v) => !v)}
                 aria-expanded={submenuOpen}
+                aria-haspopup="true"
                 className={`flex items-center gap-1 text-sm font-medium transition hover:text-gold-400 ${
-                  submenuAtivo ? "text-gold-400" : "text-white/80"
+                  submenuAtivo || submenuOpen
+                    ? "text-gold-400"
+                    : "text-white/80"
                 }`}
               >
                 Acompanhe
                 <ChevronDown
                   size={15}
-                  className={`transition-transform ${submenuOpen ? "rotate-180" : ""}`}
+                  className={`transition-transform ${
+                    submenuOpen ? "rotate-180" : ""
+                  }`}
                 />
               </button>
 
@@ -173,19 +229,35 @@ export default function Header() {
                     transition={{ duration: 0.18 }}
                     className="absolute right-0 top-full z-50 w-64 pt-3"
                   >
-                    <div className="my-2 border-t border-white/10" />
+                    <div className="overflow-hidden rounded-xl border border-white/10 bg-navy-950 p-2 shadow-xl">
+                      {/* Links públicos */}
+                      {acompanhar.map((l) => (
+                        <Link
+                          key={l.id}
+                          to={l.path}
+                          onClick={(e) => abrirPagina(e, l.path)}
+                          className={`block rounded-lg px-4 py-3 text-sm transition hover:bg-white/5 hover:text-gold-400 ${
+                            location.pathname === l.path
+                              ? "text-gold-400"
+                              : "text-white/80"
+                          }`}
+                        >
+                          {l.label}
+                        </Link>
+                      ))}
 
-                    <Link
-                      to="/login"
-                      onClick={() => {
-                        setOpen(false);
-                        setSubmenuOpen(false);
-                      }}
-                      className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm text-white/60 transition hover:bg-white/5 hover:text-gold-400"
-                    >
-                      <LockKeyhole size={15} />
-                      Área administrativa
-                    </Link>
+                      {/* Acesso administrativo separado */}
+                      <div className="my-2 border-t border-white/10" />
+
+                      <button
+                        type="button"
+                        onClick={abrirLogin}
+                        className="flex w-full items-center gap-2 rounded-lg px-4 py-3 text-left text-sm text-white/60 transition hover:bg-white/5 hover:text-gold-400"
+                      >
+                        <LockKeyhole size={15} />
+                        Área administrativa
+                      </button>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -208,7 +280,7 @@ export default function Header() {
             </a>
           </nav>
 
-          {/* Botão mobile */}
+          {/* Botão do menu mobile */}
           <button
             type="button"
             className="-mr-2 flex h-11 w-11 items-center justify-center text-white lg:hidden"
@@ -249,29 +321,53 @@ export default function Header() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.04 * i }}
                   className={`font-display border-b border-white/10 py-3 text-2xl font-bold ${
-                    isHome && active === l.id ? "text-gold-400" : "text-white"
+                    isHome && active === l.id
+                      ? "text-gold-400"
+                      : "text-white"
                   }`}
                 >
                   {l.label}
                 </motion.a>
               ))}
 
+              {/* Páginas públicas no mobile */}
               <div className="mt-5">
                 <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-gold-400">
                   Acompanhe
                 </p>
 
-                <Link
-                  to="/login"
-                  onClick={() => {
-                    setOpen(false);
-                    setSubmenuOpen(false);
-                  }}
-                  className="flex items-center gap-3 border-b border-white/10 py-3 text-base text-white/60 transition hover:text-gold-400"
+                {acompanhar.map((l, i) => (
+                  <motion.div
+                    key={l.id}
+                    initial={{ opacity: 0, x: -15 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{
+                      delay: 0.04 * (links.length + i),
+                    }}
+                  >
+                    <Link
+                      to={l.path}
+                      onClick={(e) => abrirPagina(e, l.path)}
+                      className={`block border-b border-white/10 py-3 text-lg ${
+                        location.pathname === l.path
+                          ? "text-gold-400"
+                          : "text-white/80"
+                      }`}
+                    >
+                      {l.label}
+                    </Link>
+                  </motion.div>
+                ))}
+
+                {/* Acesso administrativo no mobile */}
+                <button
+                  type="button"
+                  onClick={abrirLogin}
+                  className="flex w-full items-center gap-3 border-b border-white/10 py-3 text-left text-base text-white/60 transition hover:text-gold-400"
                 >
                   <LockKeyhole size={17} />
                   Área administrativa
-                </Link>
+                </button>
               </div>
             </nav>
 
