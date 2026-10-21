@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import {
   LogOut,
@@ -7,11 +6,13 @@ import {
   FileText,
   LoaderCircle,
   Lock,
+  MapPin, // Adicionado ícone para a aba de Bairros
 } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import AdminComentarios from "./AdminComentarios";
 import AdminVideos from "./AdminVideos";
 import AdminDocumentos from "./AdminDocumentos";
+import AdminBairros from "./AdminBairros"; // Importação do novo componente
 import Login from "./Login";
 
 function usarNoIndex() {
@@ -194,6 +195,11 @@ export default function Admin() {
       nome: "Vídeos",
       icone: PlaySquare,
     },
+    {
+      id: "bairros",
+      nome: "Bairros",
+      icone: MapPin,
+    },
   ];
 
   return (
@@ -266,6 +272,8 @@ export default function Admin() {
           {aba === "opinioes" && <AdminComentarios />}
 
           {aba === "videos" && <AdminVideos />}
+
+          {aba === "bairros" && <AdminBairros />}
         </section>
       </div>
     </main>
