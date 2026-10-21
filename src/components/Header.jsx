@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useScroll, useSpring } from "framer-motion";
-import { Menu, X, ArrowRight, ChevronDown } from "lucide-react";
+import { Menu, X, ArrowRight, ChevronDown, LockKeyhole } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useActiveSection } from "../hooks/useActiveSection";
 
@@ -173,20 +173,19 @@ export default function Header() {
                     transition={{ duration: 0.18 }}
                     className="absolute right-0 top-full z-50 w-64 pt-3"
                   >
-                    <div className="overflow-hidden rounded-xl border border-white/10 bg-navy-950 p-2 shadow-xl">
-                      {acompanhar.map((l) => (
-                        <Link
-                          key={l.id}
-                          to={l.path}
-                          onClick={(e) => abrirPagina(e, l.path)}
-                          className={`block rounded-lg px-4 py-3 text-sm transition hover:bg-white/5 hover:text-gold-400 ${
-                            location.pathname === l.path ? "text-gold-400" : "text-white/80"
-                          }`}
-                        >
-                          {l.label}
-                        </Link>
-                      ))}
-                    </div>
+                    <div className="my-2 border-t border-white/10" />
+
+                    <Link
+                      to="/login"
+                      onClick={() => {
+                        setOpen(false);
+                        setSubmenuOpen(false);
+                      }}
+                      className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm text-white/60 transition hover:bg-white/5 hover:text-gold-400"
+                    >
+                      <LockKeyhole size={15} />
+                      Área administrativa
+                    </Link>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -262,24 +261,17 @@ export default function Header() {
                   Acompanhe
                 </p>
 
-                {acompanhar.map((l, i) => (
-                  <motion.div
-                    key={l.id}
-                    initial={{ opacity: 0, x: -15 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.04 * (links.length + i) }}
-                  >
-                    <Link
-                      to={l.path}
-                      onClick={(e) => abrirPagina(e, l.path)}
-                      className={`block border-b border-white/10 py-3 text-lg ${
-                        location.pathname === l.path ? "text-gold-400" : "text-white/80"
-                      }`}
-                    >
-                      {l.label}
-                    </Link>
-                  </motion.div>
-                ))}
+                <Link
+                  to="/login"
+                  onClick={() => {
+                    setOpen(false);
+                    setSubmenuOpen(false);
+                  }}
+                  className="flex items-center gap-3 border-b border-white/10 py-3 text-base text-white/60 transition hover:text-gold-400"
+                >
+                  <LockKeyhole size={17} />
+                  Área administrativa
+                </Link>
               </div>
             </nav>
 
