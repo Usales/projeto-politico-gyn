@@ -1,61 +1,117 @@
 
 import { useEffect, useState } from "react";
-import { LogOut, MessageSquare, PlaySquare } from "lucide-react";
+import {
+  LogOut,
+  MessageSquare,
+  PlaySquare,
+  FileText,
+  LoaderCircle,
+  Lock,
+} from "lucide-react";
 import { supabase } from "../lib/supabase";
 import AdminComentarios from "./AdminComentarios";
 import AdminVideos from "./AdminVideos";
+import AdminDocumentos from "./AdminDocumentos";
 import Login from "./Login";
 
-// Impede que buscadores indexem esta página
-function useNaoIndexar() {
+function usarNoIndex() {
   useEffect(() => {
-    const meta = document.createElement("meta");
-    meta.name = "robots";
-    meta.content = "noindex, nofollow";
-    document.head.appendChild(meta);
+    let meta = document.querySelector('meta[name="robots"]');
+    const metaExistia = Boolean(meta);
+    const conteudoAnterior = meta?.getAttribute("content");
+
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.name = "robots";
+      document.head.appendChild(meta);
+    }
+
+    meta.setAttribute("content", "noindex, nofollow, noarchive");
 
     return () => {
-      meta.remove();
+      if (metaExistia) {
+        meta.setAttribute("content", conteudoAnterior || "");
+      } else {
+        meta.remove();
+      }
     };
   }, []);
 }
 
 export default function Admin() {
-  useNaoIndexar();
+  usarNoIndex();
 
-  const [sessao, setSessao] = useState(undefined);
-  const [ehAdmin, setEhAdmin] = useState(null);
-  const [erroPermissao, setErroPermissao] = useState(false);
-  const [aba, setAba] = useState("comentarios");
+  const [sessao, setSessao] = useState(null);
+  const [verificando, setVerificando] = useState(true);
+  const [ehAdmin, setEhAdmin] = useState(false);
+  const [aba, setAba] = useState("documentos");
+  const [erro, setErro] = useState("");
 
-  // Obtém a sessão e acompanha alterações de autenticação.
   useEffect(() => {
     if (!supabase) {
-      setSessao(null);
+      setErro("O Supabase não está configurado.");
+      setVerificando(false);
       return;
     }
 
     let ativo = true;
 
-    async function verificarSessao() {
-      const { data, error } = await supabase.auth.getSession();
+    async function verificarUsuario(usuario) {
+      if (!ativo) return;
+
+      setSessao(usuario || null);
+      setEhAdmin(false);
+      setErro("");
+
+      if (!usuario) {
+        setVerificando(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("admins")
+        .select("user_id")
+        .eq("user_id", usuario.id)
+        .maybeSingle();
 
       if (!ativo) return;
 
       if (error) {
-        setSessao(null);
-        return;
+        setErro(
+          "Não foi possível verificar suas permissões. Confira as políticas RLS da tabela admins."
+        );
+        setEhAdmin(false);
+      } else {
+        setEhAdmin(Boolean(data));
       }
 
-      setSessao(data.session);
+      setVerificando(false);
     }
 
-    verificarSessao();
+    supabase.auth
+      .getSession()
+      .then(({ data, error }) => {
+        if (error) {
+          if (ativo) {
+            setErro("Não foi possível verificar sua sessão.");
+            setVerificando(false);
+          }
+          return;
+        }
+
+        verificarUsuario(data.session?.user || null);
+      })
+      .catch(() => {
+        if (ativo) {
+          setErro("Não foi possível verificar sua sessão.");
+          setVerificando(false);
+        }
+      });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_evento, novaSessao) => {
-      setSessao(novaSessao);
+      verificarUsuario(novaSessao?.user || null);
     });
 
     return () => {
@@ -64,200 +120,153 @@ export default function Admin() {
     };
   }, []);
 
-  const userId = sessao ? sessao.user.id : sessao;
-
-  // Verifica se o usuário autenticado consta na tabela admins.
-  useEffect(() => {
-    if (!supabase || userId === undefined) return;
-
-    if (userId === null) {
-      setEhAdmin(null);
-      setErroPermissao(false);
-      return;
-    }
-
-    let ativo = true;
-
-    async function verificarAdministrador() {
-      setEhAdmin(null);
-      setErroPermissao(false);
-
-      const { data, error } = await supabase
-        .from("admins")
-        .select("user_id")
-        .eq("user_id", userId)
-        .maybeSingle();
-
-      if (!ativo) return;
-
-      if (error) {
-        setEhAdmin(false);
-        setErroPermissao(true);
-        return;
-      }
-
-      setEhAdmin(Boolean(data));
-    }
-
-    verificarAdministrador();
-
-    return () => {
-      ativo = false;
-    };
-  }, [userId]);
-
   async function sair() {
     if (!supabase) return;
 
-    await supabase.auth.signOut();
-    setSessao(null);
-    setEhAdmin(null);
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      setErro("Não foi possível encerrar a sessão. Tente novamente.");
+    }
+  }
+
+  if (verificando) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#070f23] px-5 text-white">
+        <div className="flex items-center gap-3">
+          <LoaderCircle className="animate-spin text-[#f5b82e]" size={24} />
+          <span>Verificando acesso administrativo...</span>
+        </div>
+      </main>
+    );
+  }
+
+  if (!sessao) {
+    return <Login />;
+  }
+
+  if (!ehAdmin) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#070f23] px-5 py-20 text-white">
+        <section className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#111b2e] p-7 text-center shadow-xl">
+          <Lock size={38} className="mx-auto text-[#f5b82e]" />
+
+          <h1 className="mt-4 text-2xl font-bold">
+            Acesso não autorizado
+          </h1>
+
+          <p className="mt-3 text-sm leading-6 text-slate-300">
+            Sua conta está autenticada, mas não possui permissão para acessar
+            o painel administrativo.
+          </p>
+
+          {erro && (
+            <p role="alert" className="mt-4 text-sm text-red-300">
+              {erro}
+            </p>
+          )}
+
+          <button
+            type="button"
+            onClick={sair}
+            className="mt-6 rounded-xl bg-[#f5b82e] px-5 py-3 font-bold text-[#101827] hover:bg-[#ffd064]"
+          >
+            Sair da conta
+          </button>
+        </section>
+      </main>
+    );
   }
 
   const abas = [
     {
-      id: "comentarios",
-      label: "Opiniões",
-      icon: MessageSquare,
+      id: "documentos",
+      nome: "Documentos",
+      icone: FileText,
+    },
+    {
+      id: "opinioes",
+      nome: "Opiniões",
+      icone: MessageSquare,
     },
     {
       id: "videos",
-      label: "Vídeos",
-      icon: PlaySquare,
+      nome: "Vídeos",
+      icone: PlaySquare,
     },
   ];
 
-  let conteudo;
-
-  if (!supabase) {
-    conteudo = (
-      <p className="text-navy-900/70">
-        O Supabase não está configurado. Verifique as variáveis de ambiente.
-      </p>
-    );
-  } else if (sessao === undefined) {
-    conteudo = (
-      <p className="text-navy-900/70">
-        Verificando sessão...
-      </p>
-    );
-  } else if (!sessao) {
-    conteudo = <Login />;
-  } else if (erroPermissao) {
-    conteudo = (
-      <div className="mx-auto max-w-md space-y-4 rounded-3xl bg-white p-8 text-center shadow-xl">
-        <h1 className="font-display text-xl font-bold text-navy-900">
-          Não foi possível verificar o acesso
-        </h1>
-
-        <p className="text-sm text-navy-900/70">
-          O sistema não conseguiu consultar suas permissões. Verifique a
-          configuração de acesso à tabela admins no Supabase.
-        </p>
-
-        <button
-          type="button"
-          onClick={sair}
-          className="min-h-11 rounded-full border border-navy-900/20 px-6 text-sm font-semibold text-navy-900"
-        >
-          Sair
-        </button>
-      </div>
-    );
-  } else if (ehAdmin === null) {
-    conteudo = (
-      <p className="text-navy-900/70">
-        Verificando permissão de administrador...
-      </p>
-    );
-  } else if (!ehAdmin) {
-    conteudo = (
-      <div className="mx-auto max-w-md space-y-4 rounded-3xl bg-white p-8 text-center shadow-xl">
-        <h1 className="font-display text-xl font-bold text-navy-900">
-          Acesso não autorizado
-        </h1>
-
-        <p className="text-navy-900/80">
-          Esta conta está autenticada, mas não tem permissão de administrador.
-        </p>
-
-        <button
-          type="button"
-          onClick={sair}
-          className="min-h-11 rounded-full border border-navy-900/20 px-6 text-sm font-semibold text-navy-900"
-        >
-          Sair da conta
-        </button>
-      </div>
-    );
-  } else {
-    conteudo = (
-      <>
-        <div className="flex flex-wrap items-center justify-between gap-4">
+  return (
+    <main className="min-h-screen bg-[#070f23] px-4 pb-16 pt-28 text-white sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <header className="flex flex-col justify-between gap-5 border-b border-white/10 pb-7 sm:flex-row sm:items-center">
           <div>
-            <h1 className="font-display text-3xl font-extrabold text-navy-900 md:text-4xl">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#f5b82e]">
+              Área restrita
+            </p>
+
+            <h1 className="mt-2 text-3xl font-extrabold sm:text-4xl">
               Painel administrativo
             </h1>
 
-            <p className="mt-1 text-sm text-navy-900/70">
-              {sessao.user.email}
+            <p className="mt-2 text-sm text-slate-400">
+              Gerencie o conteúdo publicado no site.
             </p>
           </div>
 
           <button
             type="button"
             onClick={sair}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-navy-900/20 bg-white px-5 text-sm font-semibold text-navy-900 transition hover:border-navy-900"
+            className="inline-flex items-center justify-center gap-2 self-start rounded-xl border border-white/15 px-4 py-3 text-sm font-semibold hover:border-red-400/60 hover:text-red-200 sm:self-auto"
           >
-            <LogOut size={17} />
+            <LogOut size={18} />
             Sair
           </button>
-        </div>
+        </header>
 
-        <p className="mt-2 text-xs text-navy-900/60">
-          Sua sessão fica salva neste navegador. Em computador compartilhado,
-          clique em Sair ao terminar.
-        </p>
+        {erro && ehAdmin && (
+          <div
+            role="alert"
+            className="mt-5 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200"
+          >
+            {erro}
+          </div>
+        )}
 
-        <div
-          role="tablist"
+        <nav
           aria-label="Seções administrativas"
-          className="mt-8 flex flex-wrap gap-3"
+          className="mt-7 flex flex-wrap gap-2 border-b border-white/10 pb-5"
         >
-          {abas.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              type="button"
-              role="tab"
-              aria-selected={aba === id}
-              onClick={() => setAba(id)}
-              className={`inline-flex min-h-12 items-center gap-2 rounded-2xl border px-5 text-sm font-semibold transition ${
-                aba === id
-                  ? "border-navy-900 bg-navy-900 text-white"
-                  : "border-navy-900/10 bg-white text-navy-900 hover:border-gold-400"
-              }`}
-            >
-              <Icon size={18} />
-              {label}
-            </button>
-          ))}
-        </div>
+          {abas.map((item) => {
+            const Icone = item.icone;
+            const ativa = aba === item.id;
 
-        <div className="mt-8">
-          {aba === "comentarios" ? (
-            <AdminComentarios />
-          ) : (
-            <AdminVideos />
-          )}
-        </div>
-      </>
-    );
-  }
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setAba(item.id)}
+                aria-current={ativa ? "page" : undefined}
+                className={`inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition ${
+                  ativa
+                    ? "bg-[#f5b82e] text-[#101827]"
+                    : "border border-white/10 bg-white/5 text-slate-300 hover:border-[#f5b82e]/50 hover:text-white"
+                }`}
+              >
+                <Icone size={18} />
+                {item.nome}
+              </button>
+            );
+          })}
+        </nav>
 
-  return (
-    <main className="min-h-screen bg-paper pb-24 pt-28">
-      <div className="mx-auto max-w-5xl px-5 sm:px-8">
-        {conteudo}
+        <section className="mt-7">
+          {aba === "documentos" && <AdminDocumentos />}
+
+          {aba === "opinioes" && <AdminComentarios />}
+
+          {aba === "videos" && <AdminVideos />}
+        </section>
       </div>
     </main>
   );
