@@ -1,4 +1,4 @@
-
+import AdminBairrosMapa from "./AdminBairrosMapa";
 import { useCallback, useEffect, useState } from "react";
 import {
   MapPin,
@@ -523,6 +523,10 @@ export default function AdminBairros() {
           ))}
         </div>
       )}
+    <AdminBairrosMapa
+        bairros={bairros}
+        onAtualizado={carregarBairros}
+      />
     </section>
   );
 }
