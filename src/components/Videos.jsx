@@ -1,21 +1,14 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Play, ExternalLink, CalendarDays } from "lucide-react";
+import { supabase } from "../lib/supabase";
 import { useConsentimento } from "../lib/consentimento";
 import AvisoTerceiros from "./AvisoTerceiros";
 
 const CANAL_URL = "https://www.youtube.com/channel/UCoyKBK0rYXIe6g0WcOefx7w";
 
-// Para adicionar outro vídeo, copie um bloco inteiro e troque os dados.
-// "id" é o código depois de "v=" no link do YouTube. "data" no formato AAAA-MM-DD.
-const videos = [
-  {
-    id: "y4fDvVIjbzk",
-    titulo: "É possível reduzir os impostos de Goiânia?",
-    descricao:
-      "Goiânia arrecada bilhões de reais todos os anos. Mas será que é possível reduzir os impostos pagos pelo cidadão sem prejudicar os serviços públicos? Neste vídeo, analiso os números das contas municipais, explico a diferença entre IPTU, ISS e taxas e apresento caminhos para discutir uma política tributária mais eficiente e responsável.",
-    data: "2026-10-19",
-  },
+// Usado só se o banco não estiver disponível. Os vídeos reais ficam no painel /admin.
+const PADRAO = [
   {
     id: "IBfWH6IWmWI",
     titulo: "Para onde vai o dinheiro de Goiânia?",
@@ -31,15 +24,42 @@ const formatarData = (data) =>
   new Date(`${data}T12:00:00`).toLocaleDateString("pt-BR");
 
 export default function Videos() {
-  const [idAtual, setIdAtual] = useState(videos[0]?.id);
+  const [videos, setVideos] = useState(null); // null = carregando
+  const [idEscolhido, setIdEscolhido] = useState(null);
   const [tocando, setTocando] = useState(false);
   const playerRef = useRef(null);
   const permitido = useConsentimento() === "sim";
 
-  const atual = videos.find((v) => v.id === idAtual);
+  useEffect(() => {
+    if (!supabase) {
+      setVideos(PADRAO);
+      return;
+    }
+    supabase
+      .from("videos")
+      .select("youtube_id, titulo, descricao, data_publicacao")
+      .eq("publicado", true)
+      .order("data_publicacao", { ascending: false })
+      .then(({ data, error }) => {
+        if (error) {
+          setVideos(PADRAO);
+          return;
+        }
+        setVideos(
+          (data ?? []).map((v) => ({
+            id: v.youtube_id,
+            titulo: v.titulo,
+            descricao: v.descricao ?? "",
+            data: v.data_publicacao,
+          }))
+        );
+      });
+  }, []);
+
+  const atual = videos?.find((v) => v.id === idEscolhido) ?? videos?.[0];
 
   function selecionar(id) {
-    setIdAtual(id);
+    setIdEscolhido(id);
     setTocando(false);
     playerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -62,13 +82,14 @@ export default function Videos() {
           </p>
         </div>
 
-        {!atual ? (
+        {videos === null ? (
+          <p className="mt-10 text-slate-400">Carregando vídeos...</p>
+        ) : !atual ? (
           <p className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-slate-400">
             Ainda não há vídeos publicados.
           </p>
         ) : (
           <>
-            {/* Player principal */}
             <motion.div
               key={atual.id}
               ref={playerRef}
@@ -124,9 +145,11 @@ export default function Videos() {
                   {atual.titulo}
                 </h2>
 
-                <p className="mt-4 text-sm leading-6 text-slate-300">
-                  {atual.descricao}
-                </p>
+                {atual.descricao && (
+                  <p className="mt-4 text-sm leading-6 text-slate-300">
+                    {atual.descricao}
+                  </p>
+                )}
 
                 <div className="mt-6 flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
                   <a
@@ -151,7 +174,6 @@ export default function Videos() {
               </div>
             </motion.div>
 
-            {/* Grade: só aparece quando houver mais de um vídeo */}
             {videos.length > 1 && (
               <div className="mt-16">
                 <h2 className="font-display text-xl font-bold">Todos os vídeos</h2>
@@ -162,15 +184,12 @@ export default function Videos() {
                       type="button"
                       key={video.id}
                       onClick={() => selecionar(video.id)}
-                      aria-pressed={video.id === idAtual}
+                      aria-pressed={video.id === atual.id}
                       className={`overflow-hidden rounded-2xl border bg-[#111b2e] text-left transition hover:-translate-y-1 hover:border-[#f5b82e]/50 ${
-                        video.id === idAtual
-                          ? "border-[#f5b82e]"
-                          : "border-white/10"
+                        video.id === atual.id ? "border-[#f5b82e]" : "border-white/10"
                       }`}
                     >
                       <div className="relative aspect-video bg-black">
-                        {/* Miniatura é do Google: só aparece com permissão */}
                         {permitido && (
                           <img
                             src={miniatura(video.id)}
@@ -185,9 +204,7 @@ export default function Videos() {
                       </div>
 
                       <div className="p-4">
-                        <h3 className="font-bold leading-snug">
-                          {video.titulo}
-                        </h3>
+                        <h3 className="font-bold leading-snug">{video.titulo}</h3>
                         <p className="mt-2 text-xs text-slate-400">
                           {formatarData(video.data)}
                         </p>

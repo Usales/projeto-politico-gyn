@@ -17,7 +17,7 @@ import Comentarios from "./components/Comentarios";
 import Videos from "./components/Videos";
 import Privacidade from "./components/Privacidade";
 import BannerConsentimento from "./components/BannerConsentimento";
-
+import Admin from "./components/Admin";
 
 // Ao trocar de página, volta ao topo (ou rola até a seção, se o link tiver #)
 function ScrollAoTrocar() {
@@ -78,6 +78,7 @@ function Conteudo() {
         <Route path="/videos" element={<Videos />} />
         <Route path="/opinioes" element={<PaginaOpinioes />} />
         <Route path="/privacidade" element={<Privacidade />} />
+        <Route path="/admin" element={<Admin />} />
 
         <Route
           path="*"

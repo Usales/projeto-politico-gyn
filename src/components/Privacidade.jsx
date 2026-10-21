@@ -123,8 +123,7 @@ const termos = [
   {
     titulo: "3. Moderação e remoção",
     texto: [
-      "Posso recusar, ocultar ou remover qualquer opinião, a qualquer momento e sem aviso, especialmente se ela descumprir estas regras ou a lei. As opiniões publicadas são de responsabilidade de quem as escreveu e não representam a posição do responsável pelo site.",
-    ],
+      "Posso recusar, ocultar, remover ou editar qualquer opinião, a qualquer momento e sem aviso, especialmente se ela descumprir estas regras ou a lei. Quando uma opinião for editada, por exemplo para retirar um trecho ofensivo, o site mostra a indicação “editado pela moderação”. Também posso publicar comunicados, sempre identificados com a etiqueta “Equipe”. As opiniões publicadas são de responsabilidade de quem as escreveu e não representam a posição do responsável pelo site.",    ],
   },
   {
     titulo: "4. Licença sobre as opiniões",
