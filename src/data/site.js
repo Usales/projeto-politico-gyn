@@ -14,6 +14,8 @@ import {
 export const contato = {
   whatsapp: "5562995227774",
   instagram: "gabrielhenriques.gyn",
+  tiktok: "gabrielhenriquesgyn", // << NOVO
+  youtubeUrl: "https://www.youtube.com/@usales-z4x", // << NOVO
   // Canal de privacidade (LGPD): use um e-mail só da campanha
   email: "SEU-EMAIL-AQUI@exemplo.com",
 
@@ -23,6 +25,10 @@ export const contato = {
 
   get instagramUrl() {
     return `https://www.instagram.com/${this.instagram}/`;
+  },
+
+  get tiktokUrl() { // << NOVO
+    return `https://www.tiktok.com/@${this.tiktok}`;
   },
 };
 

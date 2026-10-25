@@ -1,7 +1,30 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Send, MessageCircle, AtSign } from "lucide-react";
+import { Send, MessageCircle, AtSign, Music2, Play } from "lucide-react";
 import { contato } from "../data/site";
+
+const redes = [
+  {
+    nome: "Chamar no WhatsApp",
+    href: contato.whatsappUrl,
+    icon: MessageCircle,
+  },
+  {
+    nome: `Instagram @${contato.instagram}`,
+    href: contato.instagramUrl,
+    icon: AtSign,
+  },
+  {
+    nome: `TikTok @${contato.tiktok}`,
+    href: contato.tiktokUrl,
+    icon: Music2,
+  },
+  {
+    nome: "Canal no YouTube",
+    href: contato.youtubeUrl,
+    icon: Play,
+  },
+];
 
 export default function Participe() {
   const [nome, setNome] = useState("");
@@ -15,7 +38,7 @@ export default function Participe() {
       (bairro ? ` Sou do bairro/região: ${bairro}.` : "") +
       `\n\n${mensagem}`;
     const url = `https://wa.me/${contato.whatsapp}?text=${encodeURIComponent(texto)}`;
-    window.open(url, "_blank");
+    window.open(url, "_blank", "noopener,noreferrer");
   }
 
   const campo =
@@ -41,30 +64,23 @@ export default function Participe() {
             mensagem é lida.
           </p>
 
-          <div className="mt-8 space-y-4">
-            <a
-              href={`https://wa.me/${contato.whatsapp}`}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-3 font-medium text-navy-900 transition hover:text-gold-500"
-            >
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-navy-900 text-gold-400">
-                <MessageCircle size={20} />
-              </span>
-              Chamar no WhatsApp
-            </a>
-            <a
-              href={`https://instagram.com/${contato.instagram}`}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-3 font-medium text-navy-900 transition hover:text-gold-500"
-            >
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-navy-900 text-gold-400">
-                <AtSign size={20} />
-              </span>
-              @{contato.instagram}
-            </a>
-          </div>
+          <ul className="mt-8 space-y-4">
+            {redes.map(({ nome: rotulo, href, icon: Icone }) => (
+              <li key={rotulo}>
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex min-h-11 items-center gap-3 font-medium text-navy-900 transition hover:text-gold-500"
+                >
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-navy-900 text-gold-400">
+                    <Icone size={20} aria-hidden="true" />
+                  </span>
+                  {rotulo}
+                </a>
+              </li>
+            ))}
+          </ul>
         </motion.div>
 
         <motion.form
@@ -75,12 +91,32 @@ export default function Participe() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="space-y-4 rounded-3xl bg-white p-8 shadow-xl"
         >
-          <input className={campo} placeholder="Seu nome" required value={nome} onChange={(e) => setNome(e.target.value)} />
-          <input className={campo} placeholder="Bairro ou região (opcional)" value={bairro} onChange={(e) => setBairro(e.target.value)} />
-          <textarea className={`${campo} min-h-32 resize-none`} placeholder="Sua mensagem" required value={mensagem} onChange={(e) => setMensagem(e.target.value)} />
+          <input
+            className={campo}
+            placeholder="Seu nome"
+            aria-label="Seu nome"
+            required
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+          />
+          <input
+            className={campo}
+            placeholder="Bairro ou região (opcional)"
+            aria-label="Bairro ou região"
+            value={bairro}
+            onChange={(e) => setBairro(e.target.value)}
+          />
+          <textarea
+            className={`${campo} min-h-32 resize-none`}
+            placeholder="Sua mensagem"
+            aria-label="Sua mensagem"
+            required
+            value={mensagem}
+            onChange={(e) => setMensagem(e.target.value)}
+          />
           <button
             type="submit"
-            className="flex w-full items-center justify-center gap-2 rounded-full bg-navy-900 px-6 py-3 font-semibold text-white transition hover:bg-gold-400 hover:text-navy-950"
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-navy-900 px-6 py-3 font-semibold text-white transition hover:bg-gold-400 hover:text-navy-950"
           >
             Enviar pelo WhatsApp <Send size={18} />
           </button>
