@@ -1,24 +1,27 @@
-name: Supabase keep-alive
+name: Supabase Keepalive
 
 on:
   schedule:
-    - cron: "0 9 * * *" # todo dia às 09:00 UTC (06:00 em Goiânia)
-  workflow_dispatch: # permite rodar manualmente para testar
+    - cron: '0 10 */3 * *'
+  workflow_dispatch: 
 
 jobs:
-  ping:
+  ping-supabase:
     runs-on: ubuntu-latest
     steps:
-      - name: Consultar o banco
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Instalar dependências
+        run: pip install requests
+
+      - name: Rodar script de Keepalive
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-        run: |
-          status=$(curl -s -o /dev/null -w "%{http_code}" \
-            "$SUPABASE_URL/rest/v1/comentarios?select=id&limit=1" \
-            -H "apikey: $SUPABASE_ANON_KEY")
-          echo "Resposta do Supabase: $status"
-          if [ "$status" -ne 200 ]; then
-            echo "Falha ao consultar o banco"
-            exit 1
-          fi
+        run: python supabase_keepalive.py
